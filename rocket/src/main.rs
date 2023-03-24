@@ -1,10 +1,11 @@
 #[macro_use] extern crate rocket;
-use rocket::State;
+use rocket::response::content;
+use rocket::{State, Request};
 use rocket::fairing::AdHoc;
-use rocket::fs::FileServer;
-use rocket::fs::relative;
 use rocket::serde::Deserialize;
 mod startup;
+mod fs;
+mod my_type;
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -25,23 +26,20 @@ async fn version(config: &State<AppConfig>) -> String {
     // "version 1.0".to_string()
 }
 
-fn fs() -> AdHoc {
-    AdHoc::on_ignite("准备点火", |rocket| async move {
-        rocket.mount("/fs", FileServer::from(relative!("static")))
-            .attach(AdHoc::on_request("onRequest", |req, data| {
-                Box::pin(async move {
-                    println!("{} {} {}", req.method(), req.uri(), req.accept().unwrap().first().unwrap().to_string());
-                })
-            }))
-    })
+#[catch(404)]
+fn catch404(req: &Request) -> content::RawHtml<String> {
+    content::RawHtml(format!("404 for {}", req.uri()))
 }
 
 async fn go() -> Result<(), rocket::Error> {
     let app = startup::start_with_figment();
     // let app = startup::start_with_default_config();
     let app = app.mount("/", routes![index, version]);
+    let app = app.register("/", catchers![catch404]);
     let app = app.attach(AdHoc::config::<AppConfig>());
-    let app = app.attach(fs());
+    let app = app.attach(fs::ad_hoc());
+    let app = app.attach(my_type::ad_hoc());
+    // let app = app.mount("/json", json::router()); // （反）序列化只支持Rust夜间构建版本
     let _ = app.launch().await?;
     println!("Shutdown!");
     Ok(())
