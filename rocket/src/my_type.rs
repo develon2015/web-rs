@@ -18,7 +18,8 @@ fn handler(uri: &Origin, host: &Host, addr: IpAddr, my_accept: MyAccept) -> cont
 }
 
 #[get("/resp")]
-fn response() -> ResponderExample {
+// fn response() -> ResponderExample {
+fn response<'r>() -> impl Responder<'r, 'r> {
     ResponderExample
 }
 
