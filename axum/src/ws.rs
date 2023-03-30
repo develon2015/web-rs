@@ -21,8 +21,32 @@ async fn ws_handler(
     println!("headers: {:?}", headers);
     let mut resp = upgrade.on_upgrade(|mut socket| async move {
         println!("{:?}", socket.protocol());
-        // socket.send(ws::Message::Ping(vec![])).await.unwrap();
+        // socket.send(ws::Message::Ping(vec![])).await.unwrap();move async
         socket.send(ws::Message::Text(format!("Welcome"))).await.unwrap();
+        let mut interval = tokio::time::interval(core::time::Duration::from_millis(1000));
+        loop {
+            tokio::select! {
+                msg = socket.recv() => {
+                    let msg = msg.unwrap().unwrap();
+                    match msg {
+                        ws::Message::Text(msg) => {
+                            println!("recv: {msg}");
+                            socket.send(ws::Message::Text(msg)).await.unwrap();
+                        }
+                        _ => {
+                            println!("recv: {:?}", msg);
+                        }
+                    }
+                }
+                _ = interval.tick() => {
+                    socket.send(ws::Message::Text(format!("Waiting..."))).await.unwrap();
+                }
+                else => {
+                    println!("All error...");
+                    break;
+                }
+            };
+        }
     });
     println!("------------------------------------------");
     resp.headers_mut().append(http::header::SERVER, http::HeaderValue::from_static("Axum"));
