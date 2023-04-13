@@ -21,7 +21,7 @@ extern "system" {
 }
 
 fn start() {
-    let config = std::fs::read("assets/config.json").unwrap();
+    let config = std::fs::read(config::CONFIG).unwrap();
     let config: Config = serde_json::from_str(&String::from_utf8_lossy(&config).to_string()).unwrap();
     #[cfg(all(windows, not(debug_assertions)))]
     unsafe {
