@@ -2,6 +2,7 @@
   "port": 8080,
   "item": [
     {
+      "enable": false,
       "ws": "de.455556.xyz:8080",
       "listen": "127.0.0.1:1066"
     }

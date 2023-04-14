@@ -17,10 +17,10 @@ async fn config(method: Method, config: extract::State<Config>, payload: Option<
                 fs::write(super::config::CONFIG, serde_json::to_string_pretty(&config).unwrap()).await.unwrap();
                 Ok((StatusCode::OK, Json(config)))
             } else {
-                Err((StatusCode::NOT_FOUND, "POST error"))
+                Err((StatusCode::BAD_REQUEST, "POST error, please check your payload"))
             }
         }
-        _ => Err((StatusCode::NOT_FOUND, "Only allow GET and POST request"))
+        _ => Err((StatusCode::METHOD_NOT_ALLOWED, "Only allow GET and POST requests"))
     }
 }
 
