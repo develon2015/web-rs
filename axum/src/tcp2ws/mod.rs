@@ -1,6 +1,7 @@
 mod route;
 mod api;
 mod config;
+mod service;
 use config::Config;
 
 // #[tokio::main(flavor = "multi_thread", worker_threads = 5)]
