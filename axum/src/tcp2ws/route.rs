@@ -13,5 +13,11 @@ pub fn router(config: Config) -> axum::Router {
         .nest_service("/", tower_http::services::ServeDir::new("assets"))
         .route("/exit", axum::routing::get(exit))
         .nest("/api", api::router())
-        .with_state(config)
+        // .with_state(config)
+        .with_state(std::sync::Arc::new(tokio::sync::Mutex::new(config)))
+        .layer(
+            tower_http::cors::CorsLayer::new()
+                .allow_origin(tower_http::cors::AllowOrigin::any())
+                .allow_headers(tower_http::cors::Any)
+        )
 }

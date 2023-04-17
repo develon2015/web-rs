@@ -100,3 +100,11 @@ pub async fn stop(item: Item) -> std::io::Result<()> {
         _ => Err(std::io::ErrorKind::NotFound.into()),
     }
 }
+
+pub async fn list() -> std::io::Result<Vec<Item>> {
+    let map = MAP.lock().await;
+    let items = map.iter().map(|(it, _)| {
+        it.clone()
+    }).collect::<Vec<_>>();
+    Ok(items)
+}
