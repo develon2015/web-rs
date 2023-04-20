@@ -37,7 +37,7 @@ async fn start(Json(item): Json<Item>) -> impl IntoResponse {
 
 async fn stop(Json(item): Json<Item>) -> impl IntoResponse {
     match service::stop(item).await {
-        Ok(_) => Ok(()),
+        Ok(_) => Ok("服务停止成功"),
         Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
     }
 }

@@ -1,11 +1,12 @@
 use super::api;
 use super::config::Config;
 
-async fn exit() {
+async fn exit() -> impl axum::response::IntoResponse {
     tokio::spawn(async {
         tokio::time::sleep(std::time::Duration::from_millis(1000)).await;
         std::process::exit(0);
     });
+    "程序即将退出"
 }
 
 pub fn router(config: Config) -> axum::Router {

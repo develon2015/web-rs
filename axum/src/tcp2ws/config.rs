@@ -4,6 +4,8 @@ pub const CONFIG: &str = "assets/config.json";
 
 #[derive(Serialize, Deserialize, Clone, Default, Debug, PartialEq, Eq, Hash)]
 pub struct Item {
+    pub name: String,
+    pub desc: String,
     pub ws: String,
     pub listen: String,
 }
