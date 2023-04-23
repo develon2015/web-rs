@@ -28,7 +28,7 @@ fn start() {
     unsafe {
         WinExec(format!("explorer http://127.0.0.1:{}\0", config.port).as_ptr(), 0);
         FreeConsole();
-        AllocConsole();
+        // AllocConsole();
     }
     match std::net::TcpListener::bind(format!("0.0.0.0:{}", config.port)) {
         Ok(socket) => {
@@ -41,6 +41,8 @@ fn start() {
 }
 
 pub fn main() {
+    #[cfg(debug_assertions)]
+    return start();
     #[cfg(windows)]
     match std::env::var("detatch") {
         Ok(v) if v == "1" => {
